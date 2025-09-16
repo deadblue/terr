@@ -6,16 +6,16 @@ const (
 	_MaxFrames = 16
 )
 
-func fillFrames(te *_TraceableError) *_TraceableError {
+func fillFrames(te *TracedError) *TracedError {
 	// Get calling stack, skip this function
 	callers := make([]uintptr, _MaxFrames)
 	// Skip 3 frames
 	if n := runtime.Callers(3, callers); n > 0 {
-		te.frames = make([]_FrameLite, 0, n)
+		te.frames = make([]FrameLite, 0, n)
 		frames := runtime.CallersFrames(callers[:n])
 		for {
 			frame, more := frames.Next()
-			te.frames = append(te.frames, _FrameLite{
+			te.frames = append(te.frames, FrameLite{
 				PC:   frame.PC,
 				Func: frame.Function,
 				File: frame.File,

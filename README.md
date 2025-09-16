@@ -1,4 +1,4 @@
-# Traceable-Error
+# terr
 
 A traceable error library for golang.
 
