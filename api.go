@@ -6,7 +6,7 @@ import (
 )
 
 // New makes a [TracedError] with specific message.
-func New(message string) *TracedError {
+func New(message string) error {
 	return fillFrames(&TracedError{
 		base: errors.New(message),
 	}, 3)
@@ -26,11 +26,11 @@ func TraceError[V any](val V, err error) (V, error) {
 // Trace makes a [TracedError] whose original error is |base|.
 //
 // When |base| is already a TracedError, it will be returned directly.
-func Trace(base error) *TracedError {
+func Trace(base error) error {
 	return traceError(base)
 }
 
-func traceError(base error) *TracedError {
+func traceError(base error) error {
 	if base == nil {
 		return nil
 	}
@@ -45,7 +45,7 @@ func traceError(base error) *TracedError {
 // Wrap makes a [TracedError] whose original error is wrapped from cause with message.
 //
 // When |cause| is a TracedError, its frames will be copied to new error.
-func Wrap(message string, cause error) *TracedError {
+func Wrap(message string, cause error) error {
 	if te, ok := cause.(*TracedError); ok {
 		nte := &TracedError{
 			base: fmt.Errorf("%s: %w", message, te.base),
