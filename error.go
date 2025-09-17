@@ -16,7 +16,7 @@ func (e *TracedError) Error() string {
 	sb := &strings.Builder{}
 	sb.WriteString(e.base.Error())
 	for _, frame := range e.frames {
-		sb.WriteRune('\n')
+		sb.WriteString("\n\t")
 		sb.WriteString(frame.String())
 	}
 	return sb.String()
