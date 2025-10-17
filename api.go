@@ -12,6 +12,13 @@ func New(message string) error {
 	}, 3)
 }
 
+// Errorf makes a [TracedError] with a formatted error.
+func Errorf(format string, a ...any) error {
+	return fillFrames(&TracedError{
+		base: fmt.Errorf(format, a...),
+	}, 3)
+}
+
 // TraceError wraps |err| to [TracedError] when it is not nil.
 //
 // When |base| is already a TracedError, it will be returned directly.
