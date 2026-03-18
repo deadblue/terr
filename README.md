@@ -12,7 +12,7 @@ import (
 )
 
 func loadData() (err error) {
-    resp, err := terr.TraceError(http.Get("http://example.com/"))
+    resp, err := terr.Trace(http.Get("http://example.com/"))
     if err != nil {
         return
     }
