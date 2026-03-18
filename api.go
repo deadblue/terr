@@ -11,13 +11,17 @@ import (
 //
 //	resp, err := terr.Trace(http.Get("https://example.com"))
 func Trace[V any](val V, err error) (V, error) {
-	return val, TraceError(err)
+	return val, makeTracedError(err)
 }
 
 // TraceError returns a [TracedError] if `cause` is not nil.
 //
 // When `cause` is already a [TracedError], it will be returned directly.
 func TraceError(cause error) error {
+	return makeTracedError(cause)
+}
+
+func makeTracedError(cause error) error {
 	if cause == nil {
 		return nil
 	}
