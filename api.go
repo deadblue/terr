@@ -5,6 +5,30 @@ import (
 	"fmt"
 )
 
+// Trace returns the original value and a [TracedError] if `err` is not nil.
+//
+// Example:
+//
+//	resp, err := terr.Trace(http.Get("https://example.com"))
+func Trace[V any](val V, err error) (V, error) {
+	return val, TraceError(err)
+}
+
+// TraceError returns a [TracedError] if `cause` is not nil.
+//
+// When `cause` is already a [TracedError], it will be returned directly.
+func TraceError(cause error) error {
+	if cause == nil {
+		return nil
+	}
+	if te, ok := cause.(*TracedError); ok {
+		return te
+	}
+	return fillFrames(&TracedError{
+		base: cause,
+	}, 4)
+}
+
 // New makes a [TracedError] with specific message.
 func New(message string) error {
 	return fillFrames(&TracedError{
@@ -19,39 +43,10 @@ func Errorf(format string, a ...any) error {
 	}, 3)
 }
 
-// TraceError wraps |err| to [TracedError] when it is not nil.
+// Wrap makes a [TracedError] whose original error is wrapped from `cause`
+// with `message`.
 //
-// When |base| is already a TracedError, it will be returned directly.
-//
-// Example:
-//
-//	resp, err := terr.TraceError(http.Get("https://example.com"))
-func TraceError[V any](val V, err error) (V, error) {
-	return val, traceError(err)
-}
-
-// Trace makes a [TracedError] whose original error is |base|.
-//
-// When |base| is already a TracedError, it will be returned directly.
-func Trace(base error) error {
-	return traceError(base)
-}
-
-func traceError(base error) error {
-	if base == nil {
-		return nil
-	}
-	if te, ok := base.(*TracedError); ok {
-		return te
-	}
-	return fillFrames(&TracedError{
-		base: base,
-	}, 4)
-}
-
-// Wrap makes a [TracedError] whose original error is wrapped from cause with message.
-//
-// When |cause| is a TracedError, its frames will be copied to new error.
+// When `cause` is a TracedError, its frames will be copied to new error.
 func Wrap(message string, cause error) error {
 	if te, ok := cause.(*TracedError); ok {
 		nte := &TracedError{
